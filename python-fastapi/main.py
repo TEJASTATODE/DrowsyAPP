@@ -7,6 +7,9 @@ import cv2
 import time
 import os
 from threading import Thread
+import pygame
+pygame.mixer.init()  # Initialize the mixer
+
 
 from drowsy_detector import DrowsinessDetector
 

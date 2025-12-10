@@ -6,13 +6,11 @@ import {
   RiMapPinUserLine, 
   RiEyeLine, 
   RiFocus3Line,
-  RiSteeringLine,
-  RiUser3Line,
-  RiLogoutBoxRLine,
+  RiSteeringLine, 
+  RiLogoutBoxRLine, 
   RiAlarmWarningLine 
 } from "react-icons/ri";
 import { TbActivityHeartbeat, TbFaceId } from "react-icons/tb";
-
 
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -49,9 +47,9 @@ const CleanMetric = ({ label, value, max, threshold, inverse, unit = "", icon: I
 const Detection = () => {
   const [status, setStatus] = useState({ ear: 0, mar: 0, tilt: 0, score: 0, isDrowsy: false, isDistracted: false });
   const [detectionStopped, setDetectionStopped] = useState(false);
-  const [coords, setCoords] = useState({ lat: 28.6139, lng: 77.2090 });
-  const [connectionStatus, setConnectionStatus] = useState("disconnected");
   
+  
+  const [coords, setCoords] = useState(null); 
   const [sosActive, setSosActive] = useState(false);
   
   const intervalRef = useRef(null);
@@ -59,6 +57,7 @@ const Detection = () => {
   const PYTHON_URL = "http://127.0.0.1:8000"; 
   const VIDEO_FEED_URL = `${PYTHON_URL}/video_feed`;
 
+  
   useEffect(() => {
     const startSystem = async () => {
       try {
@@ -69,9 +68,8 @@ const Detection = () => {
         }
         const storedId = localStorage.getItem("sessionId");
         if(storedId) await axios.post(`${PYTHON_URL}/start_detection`, { token: "demo", session_id: storedId });
-        setConnectionStatus("connected");
         toast.success("System Ready");
-      } catch (err) { setConnectionStatus("error"); toast.error("Connection Error"); }
+      } catch (err) { toast.error("Connection Error"); }
     };
     startSystem();
     return () => clearInterval(intervalRef.current);
@@ -85,17 +83,12 @@ const Detection = () => {
           const res = await axios.get(`${PYTHON_URL}/status`);
           if (res.data) {
             setStatus(res.data);
-            if (res.data.gps && res.data.gps.lat !== 0) {
-                setCoords({ lat: parseFloat(res.data.gps.lat), lng: parseFloat(res.data.gps.lng) });
-            }
             
             if (res.data.isDrowsy) {
                 toast.error("CRITICAL FATIGUE", { className: "bg-red-600 text-white border-0" });
             } else if (res.data.isDistracted) {
                 toast.warning("EYES ON ROAD", { className: "bg-orange-500 text-white border-0" });
             }
-            
-            
           }
         } catch {}
       }, 500); 
@@ -108,10 +101,26 @@ const Detection = () => {
       const watchId = navigator.geolocation.watchPosition(
         async (pos) => {
            const { latitude, longitude } = pos.coords;
+           
+          
            setCoords({ lat: latitude, lng: longitude });
+     
            try { await axios.post(`${PYTHON_URL}/update_gps`, { lat: latitude, lng: longitude }); } catch {}
-        }, null, { enableHighAccuracy: true }
+        }, 
+        (err) => {
+            console.warn("GPS Warning:", err.message);
+           
+        }, 
+        { 
+            
+            enableHighAccuracy: false, 
+    
+            timeout: 20000, 
+           
+            maximumAge: 5000 
+        }
       );
+      
       return () => navigator.geolocation.clearWatch(watchId);
     }
   }, [detectionStopped]);
@@ -120,32 +129,20 @@ const Detection = () => {
   const handleTriggerSOS = async () => {
     if (sosActive) return;
     setSosActive(true);
-    
     const user = JSON.parse(localStorage.getItem("user"));
-    
-    let contactNumber = user.emergencyContact;
-    if (!contactNumber) {
-        toast.error("NO CONTACT SET", { description: "Defaulting to 911." });
-        contactNumber = "911";
-    }
+    let contactNumber = user?.emergencyContact || "911";
 
     window.location.href = `tel:${contactNumber}`;
-
    
     try {
         await axios.post(`${NODE_URL}/api/sos/send`, {
             userId: user._id,
-            location: coords,
+            location: coords || { lat: 0, lng: 0 },
             reason: "Manual Help Request"
         });
-        
-        toast.error("SOS SENT", { 
-            description: `Location sent to ${contactNumber}`,
-            duration: 8000,
-            className: "bg-red-700 text-white font-bold border-0 shadow-2xl"
-        });
+        toast.error("SOS SENT", { className: "bg-red-700 text-white font-bold border-0" });
     } catch (err) {
-        toast.error("SOS Network Error", { description: "Call manually!" });
+        toast.error("SOS Network Error");
         setSosActive(false); 
     }
   };
@@ -166,8 +163,6 @@ const Detection = () => {
 
   return (
     <div className="flex h-screen bg-slate-50 text-slate-900 font-sans">
-      
-   
       <aside className="w-64 bg-white border-r border-slate-200 flex flex-col justify-between p-6 z-20 shadow-sm hidden md:flex">
          <div>
             <div className="flex items-center gap-3 mb-10">
@@ -190,13 +185,11 @@ const Detection = () => {
       </aside>
 
       <main className="flex-1 p-4 md:p-8 overflow-y-auto">
-         
          <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
             <div>
                <h1 className="text-2xl font-bold text-slate-900">Live Monitoring</h1>
                <p className="text-slate-500 text-sm">Real-time driver fatigue & distraction analysis</p>
             </div>
-            
             <div className="flex items-center gap-3 w-full md:w-auto">
                 <Button 
                     variant="destructive" 
@@ -207,7 +200,6 @@ const Detection = () => {
                     <RiAlarmWarningLine className={`mr-2 ${!sosActive && 'animate-pulse'}`} size={20} />
                     {sosActive ? "SIGNAL SENT" : "EMERGENCY SOS"}
                 </Button>
-                <div className="h-8 w-px bg-slate-200 mx-2 hidden md:block"></div>
                 <Button variant="outline" onClick={handleStop} className="border-slate-300 text-slate-700 hover:bg-slate-100 rounded-full px-6">
                     <RiStopCircleLine className="mr-2" /> Stop
                 </Button>
@@ -215,8 +207,6 @@ const Detection = () => {
          </header>
 
          <div className="grid grid-cols-12 gap-6 h-auto md:h-[calc(100vh-140px)]">
-            
-       
             <div className="col-span-12 lg:col-span-8 flex flex-col gap-6">
                 <Card className="flex-1 overflow-hidden border-slate-200 shadow-sm relative bg-white rounded-3xl min-h-[400px]">
                     {!detectionStopped ? (
@@ -240,14 +230,24 @@ const Detection = () => {
             <div className="col-span-12 lg:col-span-4 flex flex-col gap-6">
                 <Card className="flex-1 overflow-hidden border-slate-200 shadow-sm relative bg-slate-100 rounded-3xl min-h-[250px]">
                     <div className="absolute inset-0">
-                        <DrowsyMap lat={coords.lat} lng={coords.lng} isDrowsy={status.isDrowsy} zoom={15} />
+                        
+                        {coords ? (
+                           <DrowsyMap lat={coords.lat} lng={coords.lng} isDrowsy={status.isDrowsy} zoom={15} />
+                        ) : (
+                           <div className="h-full w-full flex flex-col items-center justify-center text-slate-400 gap-2">
+                              <span className="loading loading-spinner loading-md"></span>
+                              <span className="text-sm font-medium animate-pulse">Acquiring GPS...</span>
+                           </div>
+                        )}
                     </div>
                     <div className="absolute bottom-4 left-4 right-4 bg-white/95 backdrop-blur-md p-3 rounded-2xl border border-slate-200 shadow-sm">
                          <div className="flex items-center gap-3">
                              <div className="bg-blue-100 p-2.5 rounded-full text-blue-600"><RiMapPinUserLine size={18} /></div>
                              <div>
                                  <div className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Coordinates</div>
-                                 <div className="text-sm font-mono font-bold text-slate-900">{coords.lat.toFixed(4)}, {coords.lng.toFixed(4)}</div>
+                                 <div className="text-sm font-mono font-bold text-slate-900">
+                                   {coords ? `${coords.lat.toFixed(4)}, ${coords.lng.toFixed(4)}` : "--, --"}
+                                 </div>
                              </div>
                          </div>
                     </div>

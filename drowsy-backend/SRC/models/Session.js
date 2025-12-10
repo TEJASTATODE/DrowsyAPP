@@ -17,36 +17,32 @@ const sessionSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-sessionId: {
+    sessionId: {
       type: String,
-      required: false,
-      
+      required: false, 
     },
     startTime: {
       type: Date,
       default: Date.now,
     },
-
     endTime: {
       type: Date,
     },
-
-    duration: { type: Number, default: 0 }, 
-
+    duration: { 
+      type: Number, 
+      default: 0 
+    }, 
+    
     avgEar: { type: Number, default: 0 }, 
     avgMar: { type: Number, default: 0 },
     maxScore: { type: Number, default: 0 },
+    drowsyCount: { type: Number, default: 0 },
+    avgFocus: { type: Number, default: 0 },
     
-    drowsyCount: { 
-      type: Number, 
-      default: 0,
-    },
-
     status: { 
       type: String, 
       default: "Safe" 
     },
-   
 
     alerts: [
       {
@@ -55,13 +51,8 @@ sessionId: {
     ],
 
     gpsHistory: [gpsPointSchema],
-
-   
-    metrics: {
-      avgEAR: Number,
-      avgMAR: Number,
-      sunglassesOnCount: Number,
-    }
+    
+ 
   },
   { timestamps: true }
 );

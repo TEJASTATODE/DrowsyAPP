@@ -4,60 +4,71 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
 
-const RecenterMap = ({ lat, lng }) => {
+const RecenterAutomatically = ({ lat, lng, zoom }) => {
   const map = useMap();
+
   useEffect(() => {
     if (lat && lng) {
-      
-        map.flyTo([lat, lng], map.getZoom(), { duration: 1.5 });
+
+      map.flyTo([lat, lng], zoom || map.getZoom(), {
+        animate: true,
+        duration: 1.5 
+      });
     }
-  }, [lat, lng, map]);
+  }, [lat, lng, zoom, map]);
+
   return null;
 };
 
 const createRadarIcon = (isDrowsy) => {
-    const colorClass = isDrowsy ? "bg-red-500 shadow-red-500" : "bg-blue-500 shadow-blue-500";
     return L.divIcon({
       className: "custom-radar-icon",
       html: `
-        <div class="relative flex items-center justify-center w-6 h-6">
-          <span class="absolute inline-flex h-full w-full rounded-full opacity-75 animate-ping ${colorClass}"></span>
-          <span class="relative inline-flex rounded-full h-4 w-4 border-2 border-white ${colorClass}"></span>
+        <div class="relative flex items-center justify-center w-8 h-8">
+          <span class="absolute inline-flex h-full w-full rounded-full opacity-75 animate-ping ${isDrowsy ? 'bg-red-500' : 'bg-blue-500'}"></span>
+          <span class="relative inline-flex rounded-full h-4 w-4 border-2 border-white ${isDrowsy ? 'bg-red-600' : 'bg-blue-600'}"></span>
         </div>
       `,
-      iconSize: [24, 24],
-      iconAnchor: [12, 12],
+      iconSize: [32, 32],
+      iconAnchor: [16, 16],
     });
 };
 
-const DrowsyMap = ({ lat, lng, isDrowsy }) => {
-  return (
+const DrowsyMap = ({ lat, lng, isDrowsy, zoom = 15 }) => {
 
+  const isValidCoord = lat !== undefined && lng !== undefined && lat !== 0;
+
+  if (!isValidCoord) {
+     return (
+        <div className="w-full h-full flex items-center justify-center bg-slate-100 text-slate-400 font-medium">
+           Waiting for GPS...
+        </div>
+     );
+  }
+
+  return (
     <MapContainer 
         center={[lat, lng]} 
-        zoom={16} 
-        scrollWheelZoom={true} 
-        style={{ height: "100%", width: "100%", background: "#0f172a" }}
+        zoom={zoom} 
+        scrollWheelZoom={false} 
+        style={{ height: "100%", width: "100%" }}
+        zoomControl={false} 
     >
-        // src/components/DrowsyMap.jsx
-
-<TileLayer
-  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" 
-/>
+        <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
         
         <Marker position={[lat, lng]} icon={createRadarIcon(isDrowsy)}>
-            <Popup className="custom-popup">
-                <div className="text-slate-900 font-semibold text-center">
-                    Vehicle Location <br /> 
-                    <span className={`font-bold ${isDrowsy ? "text-red-600" : "text-green-600"}`}>
-                        {isDrowsy ? "⚠️ DROWSY" : "✅ ACTIVE"}
-                    </span>
+            <Popup className="custom-popup" closeButton={false} autoPan={false}>
+                <div className="text-slate-900 font-bold text-xs text-center">
+                    {isDrowsy ? "⚠️ ALERT" : "Vehicle Active"}
                 </div>
             </Popup>
         </Marker>
 
-        <RecenterMap lat={lat} lng={lng} />
+        <RecenterAutomatically lat={lat} lng={lng} zoom={zoom} />
+        
     </MapContainer>
   );
 };

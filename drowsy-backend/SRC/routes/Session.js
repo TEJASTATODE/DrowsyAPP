@@ -2,13 +2,12 @@ const express = require("express");
 const router = express.Router();
 const Session = require("../models/Session");
 
-
 router.post("/start", async (req, res) => {
   try {
     const { userId } = req.body;
     const customSessionId = `${Date.now()}`;
 
-
+   
     const active = await Session.findOne({ userId, endTime: null });
     if (active) {
       active.endTime = new Date();
@@ -24,6 +23,7 @@ router.post("/start", async (req, res) => {
       duration: 0,
       avgEar: 0,
       avgMar: 0,
+      avgFocus: 0, 
       maxScore: 0,
       status: "Safe",
       metrics: { avgEAR: 0, avgMAR: 0, sunglassesOnCount: 0 }
@@ -39,11 +39,35 @@ router.post("/start", async (req, res) => {
   }
 });
 
+router.post("/save", async (req, res) => {
+  try {
+    const { userId, startTime, endTime, duration, maxScore, status, avgFocus } = req.body;
+    
+    const newSession = await Session.create({
+        userId,
+        startTime,
+        endTime,
+        duration,
+        maxScore,
+        status,
+        avgFocus: avgFocus || 0, 
+        drowsyCount: maxScore > 15 ? 1 : 0, 
+        sessionId: `${Date.now()}`,
+        gpsHistory: [] 
+    });
+
+    console.log(`✅ Session Saved for User ${userId} | Status: ${status}`);
+    res.json({ success: true, message: "Session saved", session: newSession });
+
+  } catch (err) {
+    console.error("Save Error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
 
 router.post("/stop", async (req, res) => {
   try {
     const { sessionId, summary } = req.body; 
-    
     
     const session = await Session.findOne({ sessionId: sessionId });
     
@@ -61,7 +85,11 @@ router.post("/stop", async (req, res) => {
         session.drowsyCount = summary.drowsyCount || 0;
         session.maxScore = summary.maxScore || 0;
 
-        if (session.drowsyCount > 5 || session.maxScore > 8) {
+
+        session.avgFocus = summary.avgFocus || 0;
+
+        // Determine Status based on logic
+        if (session.drowsyCount > 5 || session.maxScore > 15) {
             session.status = "Danger";
         } else if (session.drowsyCount > 0) {
             session.status = "Warning";
@@ -94,11 +122,16 @@ router.post("/update", async (req, res) => {
 
     if (!session.updatesCount) session.updatesCount = 0;
 
+
     if (ear !== undefined) {
-      session.metrics.avgEAR = (session.metrics.avgEAR * session.updatesCount + ear) / (session.updatesCount + 1);
+      if (!session.metrics) session.metrics = {};
+      const currentAvg = session.metrics.avgEAR || 0;
+      session.metrics.avgEAR = (currentAvg * session.updatesCount + ear) / (session.updatesCount + 1);
     }
     if (mar !== undefined) {
-      session.metrics.avgMAR = (session.metrics.avgMAR * session.updatesCount + mar) / (session.updatesCount + 1);
+      if (!session.metrics) session.metrics = {};
+      const currentAvg = session.metrics.avgMAR || 0;
+      session.metrics.avgMAR = (currentAvg * session.updatesCount + mar) / (session.updatesCount + 1);
     }
 
     if (alert === true) {
@@ -117,7 +150,6 @@ router.post("/update", async (req, res) => {
 
 router.get("/:sessionId/gps", async (req, res) => {
   try {
-
     const session = await Session.findOne({ sessionId: req.params.sessionId });
     if (!session) return res.status(404).json({ error: "Session not found" });
 
@@ -130,7 +162,6 @@ router.get("/:sessionId/gps", async (req, res) => {
 
 router.get("/:sessionId", async (req, res) => {
   try {
-
     const session = await Session.findOne({ sessionId: req.params.sessionId });
     if (!session) return res.status(404).json({ error: "Session not found" });
 
