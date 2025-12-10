@@ -1,0 +1,14 @@
+node_modules/
+.env
+venv/
+venv310/
+__pycache__/
+snapshots/
+logs/
+*.pyc
+*.pkl
+*.h5
+*.onnx
+*.pth
+*.tflite
+.DS_Store
