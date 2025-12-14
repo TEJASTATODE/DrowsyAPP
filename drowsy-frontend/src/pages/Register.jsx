@@ -1,12 +1,12 @@
 import { use, useEffect, useState } from "react";
-
+import{useNavigate} from "react-router-dom";
 import { motion } from "framer-motion";
 import { 
   ShieldCheck, 
   Zap, 
   CheckCircle2
 } from "lucide-react";
-
+const navigate = useNavigate();
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -48,7 +48,7 @@ const Register = () => {
       if (data.success) {
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
-        window.location.href = "/profile";
+        navigate("/profile");
       } else {
         alert(data.message || "Registration Failed");
         setLoading(false);

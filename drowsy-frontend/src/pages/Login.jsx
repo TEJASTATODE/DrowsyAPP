@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { 
   Car, 
   ArrowLeft, 
@@ -7,7 +8,7 @@ import {
   ShieldCheck, 
   Fingerprint 
 } from "lucide-react";
-
+const navigate = useNavigate();
 const SafeSteerLogo = () => (
   <div className="flex items-center gap-3">
     <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-slate-900 text-white shadow-md">
@@ -38,7 +39,7 @@ const Login = () => {
       if (data.success) {
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
-        window.location.href = "/profile";
+        navigate("/profile");
       } else {
         alert(data.message || "Login Failed");
         setLoading(false);
