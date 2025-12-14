@@ -50,19 +50,36 @@ const navigate = useNavigate();
     }
   };
 
-  useEffect(() => {
-    if (window.google) {
+ useEffect(() => {
+  const interval = setInterval(() => {
+    if (
+      window.google &&
+      window.google.accounts &&
+      window.google.accounts.id
+    ) {
       window.google.accounts.id.initialize({
         client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
         callback: handleGoogleCallback,
       });
 
       window.google.accounts.id.renderButton(
-        document.getElementById("googleLoginBtn"),
-        { theme: "outline", size: "large", width: "100%", shape: "rectangular", text: "continue_with" } 
+        document.getElementById("googleBtn"),
+        {
+          theme: "outline",
+          size: "large",
+          width: "100%",
+          shape: "pill",
+          text: "continue_with",
+        }
       );
+
+      clearInterval(interval);
     }
-  }, []);
+  }, 100);
+
+  return () => clearInterval(interval);
+}, []);
+
 
   return (
     <div className="min-h-screen w-full bg-slate-50 font-sans text-slate-900 flex flex-col relative overflow-hidden">
