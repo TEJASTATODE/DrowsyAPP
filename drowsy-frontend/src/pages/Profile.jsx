@@ -115,6 +115,7 @@ const SessionDetailModal = ({ session, onClose }) => {
 };
 
 export default function Profile() {
+     const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isStarting, setIsStarting] = useState(false);
@@ -136,7 +137,7 @@ export default function Profile() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (!token) { window.location.href = "/login"; return; }
+    if (!token) { navigate("/login"); return; }
     
     const initData = async () => {
         try {
@@ -166,7 +167,7 @@ export default function Profile() {
   };
 
   const handleStartDetection = async () => {
-    const navigate = useNavigate();
+    
     if (!user.emergencyContact) {
         toast.warning("Set Emergency Contact First");
         return;

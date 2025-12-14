@@ -59,7 +59,7 @@ const navigate = useNavigate();
 
       window.google.accounts.id.renderButton(
         document.getElementById("googleLoginBtn"),
-        { theme: "outline", size: "large", width: "100%", shape: "rectangular", text: "continue_with" } 
+        { theme: "outline", size: "large", width: "320", shape: "rectangular", text: "continue_with" } 
       );
     }
   }, []);
