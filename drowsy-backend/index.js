@@ -17,9 +17,9 @@ const app = require("./SRC/app.js");
 app.use(cookieParser());
 app.use(cors({
   origin: "https://drowsy-app-3v4z.vercel.app", // frontend URL
+   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true,
+  allowedHeaders: ["Content-Type", "Authorization"]
 }));
 // MongoDB Connection
 mongoose
