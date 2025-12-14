@@ -16,7 +16,7 @@ const cors = require("cors");
 const app = require("./SRC/app.js");
 app.use(cookieParser());
 app.use(cors({
-  origin: "https://drowsy-app-3v4z.vercel.app", // frontend URL
+  origin: "https://drowsy-app-ratx.vercel.app/", // frontend URL
    credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"]

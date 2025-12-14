@@ -34,7 +34,7 @@ detector = DrowsinessDetector()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://drowsyapp-1.onrender.com", "https://drowsy-app-3v4z.vercel.app"],
+    allow_origins=["https://drowsyapp-1.onrender.com", "https://drowsy-app-ratx.vercel.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
