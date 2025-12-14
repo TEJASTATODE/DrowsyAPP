@@ -6,7 +6,7 @@ import {
   Zap, 
   CheckCircle2
 } from "lucide-react";
-const navigate = useNavigate();
+
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -35,7 +35,7 @@ const FeatureItem = ({ icon: Icon, title, desc }) => (
 
 const Register = () => {
   const [loading, setLoading] = useState(false);
-
+const navigate = useNavigate();
   const handleGoogleCallback = async (response) => {
     setLoading(true);
     try {
