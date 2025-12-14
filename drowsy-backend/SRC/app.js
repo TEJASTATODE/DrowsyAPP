@@ -4,6 +4,8 @@ const passport = require("passport");
 const session = require("express-session");
 require("./config/passport");
 const app = express();
+app.use(express.json());
+app.express.urlencoded({ extended: true });
 
 app.use(session({
     secret: process.env.SESSION_SECRET,
@@ -11,10 +13,10 @@ app.use(session({
     saveUninitialized: false
 }));
 
-app.use(cors());
-app.use(express.json());
+
+
 app.use(passport.initialize());
-app.use(passport.session());
+
 
 
 
