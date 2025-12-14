@@ -5,7 +5,7 @@ import pygame
 from threading import Thread
 import time
 import os
-
+pygame.mixer.init()  # Initialize the mixer
 class DrowsinessDetector:
     def __init__(self, ear_thresh=0.21, mar_thresh=0.65, tilt_thresh=16, consec_frames=15):
         

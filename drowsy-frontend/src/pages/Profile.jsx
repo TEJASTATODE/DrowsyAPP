@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
@@ -165,6 +166,7 @@ export default function Profile() {
   };
 
   const handleStartDetection = async () => {
+    const navigate = useNavigate();
     if (!user.emergencyContact) {
         toast.warning("Set Emergency Contact First");
         return;
@@ -176,7 +178,7 @@ export default function Profile() {
           const newSessionId = sessionRes.data.sessionId || sessionRes.data.mongoId;
           localStorage.setItem("sessionId", sessionRes.data.mongoId); 
           await axios.post(`${PYTHON_URL}/start_detection`, { token: "dummy-token", session_id: newSessionId });
-          window.location.href = "/detection";
+            navigate("/detection");
       }
     } catch (err) { toast.error("Connection Error"); } finally { setIsStarting(false); }
   };
