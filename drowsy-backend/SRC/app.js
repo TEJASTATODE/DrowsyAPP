@@ -5,7 +5,7 @@ const session = require("express-session");
 require("./config/passport");
 const app = express();
 app.use(express.json());
-app.express.urlencoded({ extended: true });
+app.use(express.urlencoded({ extended: true }));
 
 app.use(session({
     secret: process.env.SESSION_SECRET,
