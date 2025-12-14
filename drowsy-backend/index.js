@@ -16,11 +16,17 @@ const cors = require("cors");
 const app = require("./SRC/app.js");
 app.use(cookieParser());
 app.use(cors({
-  origin: "https://drowsy-app-ratx.vercel.app", // frontend URL
+  origin:"https://drowsy-app-ratx.vercel.app", // frontend URL
    credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
+app.use((req, res, next) => {
+  res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
+  res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
+  next();
+});
+
 // MongoDB Connection
 mongoose
   .connect(process.env.MONGO_URI)
