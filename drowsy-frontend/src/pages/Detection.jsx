@@ -53,8 +53,8 @@ const Detection = () => {
   const [sosActive, setSosActive] = useState(false);
   
   const intervalRef = useRef(null);
-  const NODE_URL = "http://localhost:5000";
-  const PYTHON_URL = "http://127.0.0.1:8000"; 
+  const NODE_URL = "https://drowsyapp-1.onrender.com";
+  const PYTHON_URL = "https://photophilous-maliyah-subinvolute.ngrok-free.dev"; 
   const VIDEO_FEED_URL = `${PYTHON_URL}/video_feed`;
 
   

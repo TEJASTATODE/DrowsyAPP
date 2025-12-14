@@ -2,7 +2,7 @@ import httpx
 import os
 
 
-NODE_API_URL = os.getenv("NODE_URL", "http://localhost:5000/api")
+NODE_API_URL = os.getenv("NODE_URL", "https://drowsyapp-1.onrender.com/api")
 
 async def send_drowsy_data(data, session_id=None, token=None):
     """
