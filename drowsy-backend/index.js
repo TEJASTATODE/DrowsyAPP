@@ -53,6 +53,17 @@ app.get("/api/video_feed", async (req, res) => {
     res.status(500).send("Cannot fetch video feed");
   }
 });
+// Node server
+app.post("/api/start_detection", async (req, res) => {
+  try {
+    const response = await axios.post("https://photophilous-maliyah-subinvolute.ngrok-free.dev/start_detection", req.body);
+    res.json(response.data);
+  } catch (err) {
+    console.error("Python start_detection error:", err.message);
+    res.status(500).send("Cannot start detection");
+  }
+});
+
 
 app.use("/api/drowsiness", drowsyRoutes);
 app.use("/api/auth", authRoutes);

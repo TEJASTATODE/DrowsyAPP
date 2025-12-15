@@ -62,7 +62,7 @@ const Detection = () => {
           if (nodeRes.data.success) localStorage.setItem("sessionId", nodeRes.data.sessionId);
         }
         const storedId = localStorage.getItem("sessionId");
-        if(storedId) await axios.post(`${PYTHON_URL}/start_detection`, { token: "demo", session_id: storedId });
+        if(storedId) await axios.post(`${NODE_URL}/api/start_detection`, { token: "demo", session_id: storedId });
         toast.success("System Ready");
       } catch (err) { toast.error("Connection Error"); }
     };
