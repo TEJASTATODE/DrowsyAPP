@@ -49,7 +49,6 @@ const Detection = () => {
 
   const intervalRef = useRef(null);
   const NODE_URL = "https://drowsyapp-1.onrender.com";
-  const PYTHON_URL = "https://photophilous-maliyah-subinvolute.ngrok-free.dev"; 
   const VIDEO_FEED_URL = `${NODE_URL}/api/video_feed`;
 
   // Start detection session
@@ -62,7 +61,7 @@ const Detection = () => {
           if (nodeRes.data.success) localStorage.setItem("sessionId", nodeRes.data.sessionId);
         }
         const storedId = localStorage.getItem("sessionId");
-        if(storedId) await axios.post(`${NODE_URL}/api/start_detection`, { token: "demo", session_id: storedId });
+        if (storedId) await axios.post(`${NODE_URL}/api/start_detection`, { token: "demo", session_id: storedId });
         toast.success("System Ready");
       } catch (err) { toast.error("Connection Error"); }
     };
@@ -70,12 +69,12 @@ const Detection = () => {
     return () => clearInterval(intervalRef.current);
   }, []);
 
-  // Fetch metrics from Python server
+  // Fetch metrics from Node proxy
   useEffect(() => {
     if (!detectionStopped) {
       intervalRef.current = setInterval(async () => {
         try {
-          const res = await axios.get(`${PYTHON_URL}/status`);
+          const res = await axios.get(`${NODE_URL}/api/status`);
           if (res.data) {
             setStatus(res.data);
             if (res.data.isDrowsy) toast.error("CRITICAL FATIGUE", { className: "bg-red-600 text-white border-0" });
@@ -96,7 +95,7 @@ const Detection = () => {
         async (pos) => {
           const { latitude, longitude } = pos.coords;
           setCoords({ lat: latitude, lng: longitude });
-          try { await axios.post(`${PYTHON_URL}/update_gps`, { lat: latitude, lng: longitude }); } catch {}
+          try { await axios.post(`${NODE_URL}/api/update_gps`, { lat: latitude, lng: longitude }); } catch {}
         }, 
         (err) => console.warn("GPS Warning:", err.message), 
         { enableHighAccuracy: false, timeout: 20000, maximumAge: 5000 }
@@ -130,7 +129,7 @@ const Detection = () => {
     setDetectionStopped(true);
     clearInterval(intervalRef.current);
     try {
-      const pyRes = await axios.post(`${PYTHON_URL}/stop`);
+      const pyRes = await axios.post(`${NODE_URL}/api/stop_detection`);
       const sessionId = localStorage.getItem("sessionId"); 
       if (sessionId && pyRes.data.summary) {
         await axios.post(`${NODE_URL}/api/sessions/stop`, { sessionId, summary: pyRes.data.summary });

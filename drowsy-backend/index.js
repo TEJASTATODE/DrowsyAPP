@@ -35,7 +35,7 @@ mongoose
 
 
 const PYTHON_VIDEO_FEED = "https://photophilous-maliyah-subinvolute.ngrok-free.dev/video_feed";
-
+const PYTHON_URL = "https://photophilous-maliyah-subinvolute.ngrok-free.dev";
 // Proxy route
 app.get("/api/video_feed", async (req, res) => {
   try {
@@ -54,9 +54,10 @@ app.get("/api/video_feed", async (req, res) => {
   }
 });
 // Node server
+// Start detection
 app.post("/api/start_detection", async (req, res) => {
   try {
-    const response = await axios.post("https://photophilous-maliyah-subinvolute.ngrok-free.dev/start_detection", req.body);
+    const response = await axios.post(`${PYTHON_URL}/start_detection`, req.body);
     res.json(response.data);
   } catch (err) {
     console.error("Python start_detection error:", err.message);
@@ -64,6 +65,38 @@ app.post("/api/start_detection", async (req, res) => {
   }
 });
 
+// Fetch status
+app.get("/api/status", async (req, res) => {
+  try {
+    const response = await axios.get(`${PYTHON_URL}/status`);
+    res.json(response.data);
+  } catch (err) {
+    console.error("Python status error:", err.message);
+    res.status(500).send("Cannot fetch status");
+  }
+});
+
+// Update GPS
+app.post("/api/update_gps", async (req, res) => {
+  try {
+    const response = await axios.post(`${PYTHON_URL}/update_gps`, req.body);
+    res.json(response.data);
+  } catch (err) {
+    console.error("Python update_gps error:", err.message);
+    res.status(500).send("Cannot update GPS");
+  }
+});
+
+// Stop detection
+app.post("/api/stop_detection", async (req, res) => {
+  try {
+    const response = await axios.post(`${PYTHON_URL}/stop`, req.body);
+    res.json(response.data);
+  } catch (err) {
+    console.error("Python stop error:", err.message);
+    res.status(500).send("Cannot stop detection");
+  }
+});
 
 app.use("/api/drowsiness", drowsyRoutes);
 app.use("/api/auth", authRoutes);
