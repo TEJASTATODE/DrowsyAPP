@@ -210,7 +210,7 @@ const Detection = () => {
             <div className="col-span-12 lg:col-span-8 flex flex-col gap-6">
                 <Card className="flex-1 overflow-hidden border-slate-200 shadow-sm relative bg-white rounded-3xl min-h-[400px]">
                     {!detectionStopped ? (
-                        <img src={VIDEO_FEED_URL} alt="Feed" className={`w-full h-full object-cover ${status.isDrowsy ? "grayscale contrast-125" : ""}`} />
+                        <object src={VIDEO_FEED_URL} alt="Feed" className={`w-full h-full object-cover ${status.isDrowsy ? "grayscale contrast-125" : ""}`} />
                     ) : (
                         <div className="w-full h-full flex flex-col items-center justify-center bg-slate-50 text-slate-400"><TbFaceId size={48} /><span>Feed Inactive</span></div>
                     )}
