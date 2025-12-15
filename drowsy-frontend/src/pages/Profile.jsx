@@ -16,7 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const NODE_URL = "https://drowsyapp-1.onrender.com";
-const PYTHON_URL = "https://photophilous-maliyah-subinvolute.ngrok-free.dev";
+const PYTHON_URL = " https://photophilous-maliyah-subinvolute.ngrok-free.dev";
 const formatDuration = (seconds) => {
     if (!seconds) return "0m";
     const h = Math.floor(seconds / 3600);
