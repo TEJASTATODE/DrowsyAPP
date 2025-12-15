@@ -34,6 +34,26 @@ mongoose
   .catch((err) => console.error("❌ MongoDB connection error:", err));
 
 
+const PYTHON_VIDEO_FEED = "https://photophilous-maliyah-subinvolute.ngrok-free.dev/video_feed";
+
+// Proxy route
+app.get("/api/video_feed", async (req, res) => {
+  try {
+    const response = await axios({
+      method: "get",
+      url: PYTHON_VIDEO_FEED,
+      responseType: "stream",
+    });
+
+    res.setHeader("Content-Type", "multipart/x-mixed-replace; boundary=frame");
+
+    response.data.pipe(res);
+  } catch (err) {
+    console.error("Video feed error:", err.message);
+    res.status(500).send("Cannot fetch video feed");
+  }
+});
+
 app.use("/api/drowsiness", drowsyRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/sessions", sessionRoutes);

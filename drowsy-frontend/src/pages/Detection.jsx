@@ -50,7 +50,7 @@ const Detection = () => {
   const intervalRef = useRef(null);
   const NODE_URL = "https://drowsyapp-1.onrender.com";
   const PYTHON_URL = "https://photophilous-maliyah-subinvolute.ngrok-free.dev"; 
-  const VIDEO_FEED_URL = `${PYTHON_URL}/video_feed`;
+  const VIDEO_FEED_URL = `${NODE_URL}/api/video_feed`;
 
   // Start detection session
   useEffect(() => {
