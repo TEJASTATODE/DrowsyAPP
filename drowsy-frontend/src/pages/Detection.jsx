@@ -192,6 +192,7 @@ const Detection = () => {
                   src={VIDEO_FEED_URL} 
                   alt="Live Feed" 
                   className="w-full h-full object-cover"
+                  crossOrigin="anonymous"
                 />
               ) : (
                 <div className="w-full h-full flex flex-col items-center justify-center bg-slate-50 text-slate-400">
